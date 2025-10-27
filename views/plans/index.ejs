@@ -1,0 +1,450 @@
+<div class="plans-page">
+    <section class="plans-hero">
+        <div class="container">
+            <h1 class="page-title">Choose Your Plan</h1>
+            <p class="page-subtitle">Select a pre-configured plan or build your own custom solution</p>
+        </div>
+    </section>
+    
+    <section class="plans-section">
+        <div class="container">
+            <div class="plans-grid">
+                <% plans.filter(p => !p.is_custom).forEach(plan => { %>
+                    <div class="plan-card <%= plan.name.toLowerCase() === 'professional' ? 'featured' : '' %>">
+                        <% if (plan.name.toLowerCase() === 'professional') { %>
+                            <div class="plan-badge">Most Popular</div>
+                        <% } %>
+                        
+                        <div class="plan-header">
+                            <h3 class="plan-name"><%= plan.name %></h3>
+                            <div class="plan-price">
+                                <span class="price-currency">$</span>
+                                <span class="price-amount"><%= plan.price_monthly.toFixed(2) %></span>
+                                <span class="price-period">/month</span>
+                            </div>
+                            <p class="plan-description"><%= plan.description %></p>
+                        </div>
+                        
+                        <div class="plan-features">
+                            <div class="feature-item">
+                                <i class="fas fa-microchip"></i>
+                                <span><%= plan.cpu %> CPU Core<%= plan.cpu > 1 ? 's' : '' %></span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-memory"></i>
+                                <span><%= (plan.ram / 1024).toFixed(0) %> GB RAM</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-hdd"></i>
+                                <span><%= plan.disk %> GB NVMe SSD</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-database"></i>
+                                <span><%= plan.databases %> Database<%= plan.databases > 1 ? 's' : '' %></span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span><%= plan.backups %> Backup<%= plan.backups > 1 ? 's' : '' %></span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-globe"></i>
+                                <span>All Locations</span>
+                            </div>
+                        </div>
+                        
+                        <a href="#" class="btn btn-primary btn-block order-plan" data-plan='<%= JSON.stringify(plan) %>'>
+                            Get Started
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+            
+            <div class="custom-plan-cta">
+                <div class="cta-content">
+                    <h2>Need a Custom Solution?</h2>
+                    <p>Build your perfect plan with our custom configuration tool</p>
+                    <a href="/plans/custom" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-sliders-h"></i> Build Custom Plan
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Order Modal -->
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h2 class="modal-title">Configure Your Server</h2>
+        
+        <div id="orderForm">
+            <div class="form-group">
+                <label class="form-label">Select Location</label>
+                <div class="location-selector">
+                    <label class="location-option">
+                        <input type="radio" name="location" value="Mexico" checked>
+                        <div class="location-card-mini">
+                            <span class="location-flag">🇲🇽</span>
+                            <span class="location-name">Mexico City</span>
+                        </div>
+                    </label>
+                    
+                    <label class="location-option">
+                        <input type="radio" name="location" value="Ohio">
+                        <div class="location-card-mini">
+                            <span class="location-flag">🇺🇸</span>
+                            <span class="location-name">Columbus, OH</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-item">
+                    <span>Plan:</span>
+                    <span id="summaryPlan">-</span>
+                </div>
+                <div class="summary-item">
+                    <span>Resources:</span>
+                    <span id="summaryResources">-</span>
+                </div>
+                <div class="summary-item">
+                    <span>Location:</span>
+                    <span id="summaryLocation">Mexico City</span>
+                </div>
+                <div class="summary-item total">
+                    <span>Monthly Total:</span>
+                    <span id="summaryPrice">$0.00</span>
+                </div>
+            </div>
+            
+            <button id="proceedToCheckout" class="btn btn-primary btn-block btn-lg">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+.plans-hero {
+    background: linear-gradient(135deg, #8B0000, #DC143C);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.page-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.95;
+}
+
+.plans-section {
+    padding: 4rem 0;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.plan-card {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.plan-card.featured {
+    border-color: #8B0000;
+    box-shadow: 0 5px 20px rgba(139, 0, 0, 0.15);
+}
+
+.plan-badge {
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    background: linear-gradient(135deg, #8B0000, #DC143C);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.plan-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.plan-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+}
+
+.plan-price {
+    margin-bottom: 1rem;
+}
+
+.price-currency {
+    font-size: 1.5rem;
+    vertical-align: top;
+}
+
+.price-amount {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #8B0000;
+}
+
+.price-period {
+    font-size: 1rem;
+    color: #666;
+}
+
+.plan-description {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.plan-features {
+    margin-bottom: 2rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    color: #333;
+}
+
+.feature-item i {
+    color: #8B0000;
+    width: 20px;
+}
+
+.custom-plan-cta {
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+}
+
+.custom-plan-cta h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.custom-plan-cta p {
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 2rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+}
+
+.modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: #000;
+}
+
+.modal-title {
+    margin-bottom: 2rem;
+}
+
+.location-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.location-option input {
+    display: none;
+}
+
+.location-card-mini {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.location-option input:checked + .location-card-mini {
+    border-color: #8B0000;
+    background: #fff5f5;
+}
+
+.location-card-mini .location-flag {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.order-summary {
+    background: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+}
+
+.order-summary h3 {
+    margin-bottom: 1rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.summary-item.total {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #8B0000;
+    border-bottom: none;
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .location-selector {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('orderModal');
+    const closeBtn = document.querySelector('.modal-close');
+    const orderButtons = document.querySelectorAll('.order-plan');
+    const locationInputs = document.querySelectorAll('input[name="location"]');
+    const proceedBtn = document.getElementById('proceedToCheckout');
+    
+    let selectedPlan = null;
+    
+    orderButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            selectedPlan = JSON.parse(this.dataset.plan);
+            updateOrderSummary();
+            modal.style.display = 'block';
+        });
+    });
+    
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+    
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    locationInputs.forEach(input => {
+        input.addEventListener('change', updateOrderSummary);
+    });
+    
+    function updateOrderSummary() {
+        if (!selectedPlan) return;
+        
+        const selectedLocation = document.querySelector('input[name="location"]:checked').value;
+        
+        document.getElementById('summaryPlan').textContent = selectedPlan.name;
+        document.getElementById('summaryResources').textContent = 
+            `${selectedPlan.cpu} CPU, ${(selectedPlan.ram/1024).toFixed(0)}GB RAM, ${selectedPlan.disk}GB SSD`;
+        document.getElementById('summaryLocation').textContent = selectedLocation;
+        document.getElementById('summaryPrice').textContent = `$${selectedPlan.price_monthly.toFixed(2)}`;
+    }
+    
+    proceedBtn.addEventListener('click', async function() {
+        if (!selectedPlan) return;
+        
+        const selectedLocation = document.querySelector('input[name="location"]:checked').value;
+        
+        try {
+            const response = await fetch('/orders/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    planId: selectedPlan.id,
+                    nodeLocation: selectedLocation,
+                    cpu: selectedPlan.cpu,
+                    ram: selectedPlan.ram,
+                    disk: selectedPlan.disk,
+                    databases: selectedPlan.databases,
+                    backups: selectedPlan.backups,
+                    price: selectedPlan.price_monthly
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                window.location.href = `/payment/checkout/${data.orderId}`;
+            } else {
+                alert('Error creating order. Please try again.');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error creating order. Please try again.');
+        }
+    });
+});
+</script>
