@@ -172,7 +172,7 @@ async function saveAnnouncement(event) {
         type: formData.get('type'),
         start_date: formData.get('start_date') || null,
         end_date: formData.get('end_date') || null,
-        is_active: formData.get('is_active') === 'true'
+        is_active: document.getElementById('announcementActive').checked
     };
     
     try {
@@ -184,13 +184,13 @@ async function saveAnnouncement(event) {
         
         const result = await response.json();
         if (result.success) {
-            alert('Announcement saved successfully');
-            location.reload();
+            showNotification('Announcement saved successfully!', 'success');
+            setTimeout(() => location.reload(), 1000);
         } else {
-            alert('Error saving announcement: ' + result.error);
+            showNotification('Error saving announcement: ' + result.error, 'error');
         }
     } catch (err) {
-        alert('Error saving announcement: ' + err.message);
+        showNotification('Error saving announcement: ' + err.message, 'error');
     }
 }
 
@@ -207,13 +207,38 @@ async function deleteAnnouncement(id) {
         
         const result = await response.json();
         if (result.success) {
-            alert('Announcement deleted successfully');
-            location.reload();
+            showNotification('Announcement deleted successfully!', 'success');
+            setTimeout(() => location.reload(), 1000);
         } else {
-            alert('Error deleting announcement: ' + result.error);
+            showNotification('Error deleting announcement: ' + result.error, 'error');
         }
     } catch (err) {
-        alert('Error deleting announcement: ' + err.message);
+        showNotification('Error deleting announcement: ' + err.message, 'error');
     }
+}
+
+// Add notification helper function if not present
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
 }
 </script>

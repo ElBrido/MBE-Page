@@ -631,3 +631,72 @@ body[data-theme="christmas"] .admin-container {
     --primary: #c41e3a;
     --primary-dark: #9c1829;
 }
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 10000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    min-width: 300px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-success {
+    border-left: 4px solid var(--success);
+    background: linear-gradient(135deg, #d1fae5 0%, #ffffff 100%);
+}
+
+.notification-success i {
+    color: var(--success);
+    font-size: 1.5rem;
+}
+
+.notification-error {
+    border-left: 4px solid var(--error);
+    background: linear-gradient(135deg, #fee2e2 0%, #ffffff 100%);
+}
+
+.notification-error i {
+    color: var(--error);
+    font-size: 1.5rem;
+}
+
+.notification-info {
+    border-left: 4px solid #3b82f6;
+    background: linear-gradient(135deg, #dbeafe 0%, #ffffff 100%);
+}
+
+.notification-info i {
+    color: #3b82f6;
+    font-size: 1.5rem;
+}
+
+.notification span {
+    color: var(--text-dark);
+    font-weight: 500;
+}
