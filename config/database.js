@@ -89,9 +89,133 @@ async function createTables() {
             )
         `);
 
-        // (resto de creación de tablas igual que antes...)
-        // ... mantén el contenido existente de tus funciones de creación de tablas ...
-        // (no cambio la estructura de tablas en este parche)
+        // Plans table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS plans (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                description TEXT,
+                cpu INTEGER NOT NULL,
+                ram INTEGER NOT NULL,
+                disk INTEGER NOT NULL,
+                databases INTEGER DEFAULT 0,
+                backups INTEGER DEFAULT 0,
+                price_monthly DECIMAL(10,2) NOT NULL,
+                is_active BOOLEAN DEFAULT true,
+                is_custom BOOLEAN DEFAULT false,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Orders table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS orders (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                plan_id INTEGER REFERENCES plans(id),
+                coupon_id INTEGER,
+                server_name VARCHAR(255),
+                node_location VARCHAR(50),
+                status VARCHAR(50) DEFAULT 'pending',
+                price DECIMAL(10,2) NOT NULL,
+                payment_intent_id VARCHAR(255),
+                stripe_session_id VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Servers table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS servers (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
+                pterodactyl_id INTEGER,
+                name VARCHAR(255) NOT NULL,
+                status VARCHAR(50) DEFAULT 'pending',
+                ip_address VARCHAR(50),
+                port INTEGER,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Coupons table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS coupons (
+                id SERIAL PRIMARY KEY,
+                code VARCHAR(50) UNIQUE NOT NULL,
+                type VARCHAR(20) NOT NULL,
+                value DECIMAL(10,2) NOT NULL,
+                description TEXT,
+                start_date TIMESTAMP,
+                end_date TIMESTAMP,
+                usage_limit INTEGER,
+                min_purchase DECIMAL(10,2) DEFAULT 0,
+                is_active BOOLEAN DEFAULT true,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Coupon usage table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS coupon_usage (
+                id SERIAL PRIMARY KEY,
+                coupon_id INTEGER REFERENCES coupons(id) ON DELETE CASCADE,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
+                discount_amount DECIMAL(10,2) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Announcements table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS announcements (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                content TEXT NOT NULL,
+                type VARCHAR(20) DEFAULT 'info',
+                start_date TIMESTAMP,
+                end_date TIMESTAMP,
+                is_active BOOLEAN DEFAULT true,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Seasonal discounts table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS seasonal_discounts (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                discount_type VARCHAR(20) NOT NULL,
+                discount_value DECIMAL(10,2) NOT NULL,
+                start_date TIMESTAMP NOT NULL,
+                end_date TIMESTAMP NOT NULL,
+                applies_to VARCHAR(20) DEFAULT 'all',
+                is_active BOOLEAN DEFAULT true,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Site settings table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS site_settings (
+                id SERIAL PRIMARY KEY,
+                setting_key VARCHAR(100) UNIQUE NOT NULL,
+                setting_value TEXT,
+                setting_type VARCHAR(50) DEFAULT 'text',
+                description TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
         await client.query('COMMIT');
     } catch (err) {
         await client.query('ROLLBACK');
@@ -141,6 +265,8 @@ async function insertDefaultSettings() {
                     ('christmas_start', '12-01', 'date', 'Christmas theme start date (MM-DD)'),
                     ('christmas_end', '12-31', 'date', 'Christmas theme end date (MM-DD)'),
                     ('site_name', 'MadeByError Hosting', 'text', 'Site name'),
+                    ('site_logo', '/images/logo.png', 'text', 'Site logo path'),
+                    ('site_favicon', '/images/favicon.ico', 'text', 'Site favicon path'),
                     ('support_email', 'support@madebyerror.studio', 'email', 'Support email address'),
                     ('enable_registration', 'true', 'boolean', 'Allow new user registrations'),
                     ('maintenance_mode', 'false', 'boolean', 'Enable maintenance mode')
