@@ -3,6 +3,42 @@ const router = express.Router();
 const { isAdmin } = require('../middleware/auth');
 const db = require('../config/database');
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadDir = path.join(__dirname, '../public/images');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 2 * 1024 * 1024 // 2MB limit
+    },
+    fileFilter: function (req, file, cb) {
+        const allowedTypes = /jpeg|jpg|png|gif|svg|ico/;
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype);
+        
+        if (mimetype && extname) {
+            return cb(null, true);
+        } else {
+            cb(new Error('Only image files are allowed!'));
+        }
+    }
+});
 
 // Middleware to add admin role to all responses
 router.use(isAdmin);
@@ -579,6 +615,52 @@ router.get('/analytics', async (req, res) => {
     } catch (err) {
         console.error('Analytics error:', err);
         res.status(500).render('error', { error: err });
+    }
+});
+
+// Upload logo
+router.post('/upload/logo', upload.single('logo'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: 'No file uploaded' });
+        }
+        
+        const logoPath = '/images/' + req.file.filename;
+        
+        // Update database setting
+        await db.query(`
+            UPDATE site_settings 
+            SET setting_value = $1, updated_at = CURRENT_TIMESTAMP 
+            WHERE setting_key = 'site_logo'
+        `, [logoPath]);
+        
+        res.json({ success: true, path: logoPath });
+    } catch (err) {
+        console.error('Logo upload error:', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Upload favicon
+router.post('/upload/favicon', upload.single('favicon'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: 'No file uploaded' });
+        }
+        
+        const faviconPath = '/images/' + req.file.filename;
+        
+        // Update database setting
+        await db.query(`
+            UPDATE site_settings 
+            SET setting_value = $1, updated_at = CURRENT_TIMESTAMP 
+            WHERE setting_key = 'site_favicon'
+        `, [faviconPath]);
+        
+        res.json({ success: true, path: faviconPath });
+    } catch (err) {
+        console.error('Favicon upload error:', err);
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 
