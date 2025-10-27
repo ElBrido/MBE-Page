@@ -94,6 +94,25 @@ async function createTables() {
             )
         `);
 
+        // Coupons table (moved before orders table)
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS coupons (
+                id SERIAL PRIMARY KEY,
+                code VARCHAR(50) UNIQUE NOT NULL,
+                type VARCHAR(20) NOT NULL,
+                value DECIMAL(10, 2) NOT NULL,
+                description TEXT,
+                start_date TIMESTAMP,
+                end_date TIMESTAMP,
+                usage_limit INTEGER,
+                usage_count INTEGER DEFAULT 0,
+                min_purchase DECIMAL(10, 2) DEFAULT 0,
+                is_active BOOLEAN DEFAULT true,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
         // Orders table
         await client.query(`
             CREATE TABLE IF NOT EXISTS orders (
@@ -164,25 +183,6 @@ async function createTables() {
         `);
 
         await client.query('CREATE INDEX IF NOT EXISTS IDX_sessions_expire ON sessions(expire)');
-
-        // Coupons table
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS coupons (
-                id SERIAL PRIMARY KEY,
-                code VARCHAR(50) UNIQUE NOT NULL,
-                type VARCHAR(20) NOT NULL,
-                value DECIMAL(10, 2) NOT NULL,
-                description TEXT,
-                start_date TIMESTAMP,
-                end_date TIMESTAMP,
-                usage_limit INTEGER,
-                usage_count INTEGER DEFAULT 0,
-                min_purchase DECIMAL(10, 2) DEFAULT 0,
-                is_active BOOLEAN DEFAULT true,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
 
         // Announcements table
         await client.query(`
