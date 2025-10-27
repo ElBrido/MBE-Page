@@ -49,7 +49,7 @@ The database tables will be created automatically when you start the server for 
 To insert default hosting plans:
 
 ```bash
-node -e "require('./config/database').initialize().then(() => require('./config/database').insertDefaultPlans()).then(() => process.exit())"
+node -r dotenv/config -e "require('./config/database').initialize().then(() => require('./config/database').insertDefaultPlans()).then(() => process.exit())"
 ```
 
 #### Start the Server
