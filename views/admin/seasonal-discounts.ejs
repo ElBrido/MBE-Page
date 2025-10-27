@@ -179,7 +179,7 @@ async function saveDiscount(event) {
         start_date: formData.get('start_date'),
         end_date: formData.get('end_date'),
         applies_to: formData.get('applies_to'),
-        is_active: formData.get('is_active') === 'true'
+        is_active: document.getElementById('discountActive').checked
     };
     
     try {
@@ -191,13 +191,13 @@ async function saveDiscount(event) {
         
         const result = await response.json();
         if (result.success) {
-            alert('Seasonal discount saved successfully');
-            location.reload();
+            showNotification('Seasonal discount saved successfully!', 'success');
+            setTimeout(() => location.reload(), 1000);
         } else {
-            alert('Error saving discount: ' + result.error);
+            showNotification('Error saving discount: ' + result.error, 'error');
         }
     } catch (err) {
-        alert('Error saving discount: ' + err.message);
+        showNotification('Error saving discount: ' + err.message, 'error');
     }
 }
 
@@ -214,13 +214,38 @@ async function deleteDiscount(id) {
         
         const result = await response.json();
         if (result.success) {
-            alert('Seasonal discount deleted successfully');
-            location.reload();
+            showNotification('Seasonal discount deleted successfully!', 'success');
+            setTimeout(() => location.reload(), 1000);
         } else {
-            alert('Error deleting discount: ' + result.error);
+            showNotification('Error deleting discount: ' + result.error, 'error');
         }
     } catch (err) {
-        alert('Error deleting discount: ' + err.message);
+        showNotification('Error deleting discount: ' + err.message, 'error');
     }
+}
+
+// Add notification helper function if not present
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
 }
 </script>

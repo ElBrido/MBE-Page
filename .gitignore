@@ -48,3 +48,8 @@ temp/
 # Coverage
 coverage/
 .nyc_output/
+
+# Uploads (keep default images)
+public/images/*
+!public/images/logo.svg
+!public/images/favicon.svg

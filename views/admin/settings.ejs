@@ -65,12 +65,50 @@
         </div>
     </div>
 
+    <!-- Branding Settings -->
+    <div class="admin-section" style="margin-top: 2rem;">
+        <h2>Branding</h2>
+        <div class="admin-form">
+            <div class="form-group">
+                <label>Site Logo</label>
+                <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                    <img id="logoPreview" src="/images/logo.svg" alt="Logo Preview" style="max-width: 200px; max-height: 100px; border: 2px solid var(--border); border-radius: 8px; padding: 0.5rem; background: white;">
+                    <div>
+                        <input type="file" id="logoUpload" accept="image/*" style="display: none;" onchange="uploadLogo(this)">
+                        <button type="button" class="btn-admin btn-admin-primary" onclick="document.getElementById('logoUpload').click()">
+                            <i class="fas fa-upload"></i> Upload Logo
+                        </button>
+                        <small style="display: block; margin-top: 0.5rem; color: var(--text-light);">
+                            Recommended: PNG, SVG, or JPG. Max 2MB.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Site Favicon</label>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <img id="faviconPreview" src="/images/favicon.ico" alt="Favicon Preview" style="width: 64px; height: 64px; border: 2px solid var(--border); border-radius: 8px; padding: 0.5rem; background: white;">
+                    <div>
+                        <input type="file" id="faviconUpload" accept="image/x-icon,image/png,image/svg+xml" style="display: none;" onchange="uploadFavicon(this)">
+                        <button type="button" class="btn-admin btn-admin-primary" onclick="document.getElementById('faviconUpload').click()">
+                            <i class="fas fa-upload"></i> Upload Favicon
+                        </button>
+                        <small style="display: block; margin-top: 0.5rem; color: var(--text-light);">
+                            Recommended: ICO or PNG. 32x32 or 64x64 pixels.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- General Settings -->
     <div class="admin-section" style="margin-top: 2rem;">
         <h2>General Settings</h2>
         <div class="admin-form">
             <% 
-            const generalSettings = settings.filter(s => !s.setting_key.includes('theme') && !s.setting_key.includes('halloween') && !s.setting_key.includes('christmas'));
+            const generalSettings = settings.filter(s => !s.setting_key.includes('theme') && !s.setting_key.includes('halloween') && !s.setting_key.includes('christmas') && !s.setting_key.includes('logo') && !s.setting_key.includes('favicon'));
             %>
             
             <% generalSettings.forEach(setting => { %>
@@ -156,13 +194,110 @@ document.querySelectorAll('.setting-input').forEach(input => {
                     }
                 }, 1000);
             } else {
-                alert('Error updating setting: ' + data.error);
+                showNotification('Error updating setting: ' + data.error, 'error');
                 this.style.borderColor = '#ef4444';
             }
         } catch (err) {
-            alert('Error updating setting: ' + err.message);
+            showNotification('Error updating setting: ' + err.message, 'error');
             this.style.borderColor = '#ef4444';
         }
     });
 });
+
+// Upload logo function
+async function uploadLogo(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    // Validate file size (2MB max)
+    if (file.size > 2 * 1024 * 1024) {
+        showNotification('File size must be less than 2MB', 'error');
+        return;
+    }
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showNotification('Please upload an image file', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('logo', file);
+    
+    try {
+        const response = await fetch('/admin/upload/logo', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('logoPreview').src = data.path + '?t=' + Date.now();
+            showNotification('Logo uploaded successfully!', 'success');
+        } else {
+            showNotification('Error uploading logo: ' + data.error, 'error');
+        }
+    } catch (err) {
+        showNotification('Error uploading logo: ' + err.message, 'error');
+    }
+}
+
+// Upload favicon function
+async function uploadFavicon(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    // Validate file size (1MB max for favicon)
+    if (file.size > 1024 * 1024) {
+        showNotification('Favicon size must be less than 1MB', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('favicon', file);
+    
+    try {
+        const response = await fetch('/admin/upload/favicon', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('faviconPreview').src = data.path + '?t=' + Date.now();
+            showNotification('Favicon uploaded successfully!', 'success');
+            // Update favicon in the page
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showNotification('Error uploading favicon: ' + data.error, 'error');
+        }
+    } catch (err) {
+        showNotification('Error uploading favicon: ' + err.message, 'error');
+    }
+}
+
+// Notification helper
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
 </script>

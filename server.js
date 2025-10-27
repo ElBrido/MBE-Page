@@ -130,6 +130,21 @@ app.use(async (req, res, next) => {
         
         res.locals.currentTheme = theme;
         
+        // Get site branding
+        const logoResult = await db.query(
+            "SELECT setting_value FROM site_settings WHERE setting_key = 'site_logo'"
+        );
+        const faviconResult = await db.query(
+            "SELECT setting_value FROM site_settings WHERE setting_key = 'site_favicon'"
+        );
+        const siteNameResult = await db.query(
+            "SELECT setting_value FROM site_settings WHERE setting_key = 'site_name'"
+        );
+        
+        res.locals.siteLogo = logoResult.rows[0]?.setting_value || '/images/logo.svg';
+        res.locals.siteFavicon = faviconResult.rows[0]?.setting_value || '/images/favicon.svg';
+        res.locals.siteName = siteNameResult.rows[0]?.setting_value || 'MadeByError Hosting';
+        
         // Get active announcements
         const announcements = await db.query(`
             SELECT * FROM announcements 
@@ -144,6 +159,9 @@ app.use(async (req, res, next) => {
         console.error('Error loading theme/announcements:', err);
         res.locals.currentTheme = 'normal';
         res.locals.announcements = [];
+        res.locals.siteLogo = '/images/logo.svg';
+        res.locals.siteFavicon = '/images/favicon.svg';
+        res.locals.siteName = 'MadeByError Hosting';
     }
     
     // Override render to use layout

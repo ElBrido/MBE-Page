@@ -183,7 +183,7 @@ async function savePlan(event) {
         databases: parseInt(formData.get('databases')),
         backups: parseInt(formData.get('backups')),
         price_monthly: parseFloat(formData.get('price_monthly')),
-        is_active: formData.get('is_active') === 'true'
+        is_active: document.getElementById('planActive').checked
     };
     
     try {
@@ -195,14 +195,39 @@ async function savePlan(event) {
         
         const result = await response.json();
         if (result.success) {
-            alert('Plan saved successfully');
-            location.reload();
+            showNotification('Plan saved successfully!', 'success');
+            setTimeout(() => location.reload(), 1000);
         } else {
-            alert('Error saving plan: ' + result.error);
+            showNotification('Error saving plan: ' + result.error, 'error');
         }
     } catch (err) {
-        alert('Error saving plan: ' + err.message);
+        showNotification('Error saving plan: ' + err.message, 'error');
     }
+}
+
+// Add notification helper function if not present
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
 }
 
 async function deletePlan(id) {
@@ -218,13 +243,13 @@ async function deletePlan(id) {
         
         const result = await response.json();
         if (result.success) {
-            alert('Plan deleted successfully');
-            location.reload();
+            showNotification('Plan deleted successfully!', 'success');
+            setTimeout(() => location.reload(), 1000);
         } else {
-            alert('Error deleting plan: ' + result.error);
+            showNotification('Error deleting plan: ' + result.error, 'error');
         }
     } catch (err) {
-        alert('Error deleting plan: ' + err.message);
+        showNotification('Error deleting plan: ' + err.message, 'error');
     }
 }
 </script>
