@@ -93,7 +93,7 @@ router.get('/:id', isAuthenticated, async (req, res) => {
 });
 
 // Create server (called after successful payment)
-router.post('/create', isAuthenticated, express.json(), async (req, res) => {
+router.post('/create', isAuthenticated, async (req, res) => {
     try {
         const { orderId } = req.body;
 

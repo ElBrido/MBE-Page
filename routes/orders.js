@@ -4,7 +4,7 @@ const { isAuthenticated } = require('../middleware/auth');
 const db = require('../config/database');
 
 // Create order
-router.post('/create', isAuthenticated, express.json(), async (req, res) => {
+router.post('/create', isAuthenticated, async (req, res) => {
     try {
         const { planId, nodeLocation, cpu, ram, disk, databases, backups, price, couponCode } = req.body;
 
@@ -117,7 +117,7 @@ router.get('/:id', isAuthenticated, async (req, res) => {
 });
 
 // Update order status
-router.post('/:id/status', isAuthenticated, express.json(), async (req, res) => {
+router.post('/:id/status', isAuthenticated, async (req, res) => {
     try {
         const { status, paymentIntentId } = req.body;
 
@@ -136,7 +136,7 @@ router.post('/:id/status', isAuthenticated, express.json(), async (req, res) => 
 });
 
 // Validate coupon code
-router.post('/validate-coupon', isAuthenticated, express.json(), async (req, res) => {
+router.post('/validate-coupon', isAuthenticated, async (req, res) => {
     try {
         const { code, orderAmount } = req.body;
 

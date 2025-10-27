@@ -177,7 +177,7 @@ router.get('/users', async (req, res) => {
 });
 
 // Update user role
-router.post('/users/:id/role', express.json(), async (req, res) => {
+router.post('/users/:id/role', async (req, res) => {
     try {
         const { role } = req.body;
         await db.query(
@@ -192,7 +192,7 @@ router.post('/users/:id/role', express.json(), async (req, res) => {
 });
 
 // Toggle user active status
-router.post('/users/:id/toggle-active', express.json(), async (req, res) => {
+router.post('/users/:id/toggle-active', async (req, res) => {
     try {
         await db.query(
             'UPDATE users SET is_active = NOT is_active, updated_at = CURRENT_TIMESTAMP WHERE id = $1',
@@ -226,7 +226,7 @@ router.get('/plans', async (req, res) => {
 });
 
 // Create/Edit Plan
-router.post('/plans', express.json(), async (req, res) => {
+router.post('/plans', async (req, res) => {
     try {
         const { id, name, description, cpu, ram, disk, databases, backups, price_monthly, is_active } = req.body;
 
@@ -254,7 +254,7 @@ router.post('/plans', express.json(), async (req, res) => {
 });
 
 // Delete Plan
-router.delete('/plans/:id', express.json(), async (req, res) => {
+router.delete('/plans/:id', async (req, res) => {
     try {
         await db.query('DELETE FROM plans WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -286,7 +286,7 @@ router.get('/servers', async (req, res) => {
 });
 
 // Update server status
-router.post('/servers/:id/status', express.json(), async (req, res) => {
+router.post('/servers/:id/status', async (req, res) => {
     try {
         const { status } = req.body;
         await db.query(
@@ -301,7 +301,7 @@ router.post('/servers/:id/status', express.json(), async (req, res) => {
 });
 
 // Delete server
-router.delete('/servers/:id', express.json(), async (req, res) => {
+router.delete('/servers/:id', async (req, res) => {
     try {
         await db.query('DELETE FROM servers WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -345,7 +345,7 @@ router.get('/orders', async (req, res) => {
 });
 
 // Update order status
-router.post('/orders/:id/status', express.json(), async (req, res) => {
+router.post('/orders/:id/status', async (req, res) => {
     try {
         const { status } = req.body;
         await db.query(
@@ -380,7 +380,7 @@ router.get('/coupons', async (req, res) => {
 });
 
 // Create/Edit Coupon
-router.post('/coupons', express.json(), async (req, res) => {
+router.post('/coupons', async (req, res) => {
     try {
         const { id, code, type, value, description, start_date, end_date, usage_limit, min_purchase, is_active } = req.body;
 
@@ -409,7 +409,7 @@ router.post('/coupons', express.json(), async (req, res) => {
 });
 
 // Delete Coupon
-router.delete('/coupons/:id', express.json(), async (req, res) => {
+router.delete('/coupons/:id', async (req, res) => {
     try {
         await db.query('DELETE FROM coupons WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -438,7 +438,7 @@ router.get('/announcements', async (req, res) => {
 });
 
 // Create/Edit Announcement
-router.post('/announcements', express.json(), async (req, res) => {
+router.post('/announcements', async (req, res) => {
     try {
         const { id, title, content, type, start_date, end_date, is_active } = req.body;
 
@@ -466,7 +466,7 @@ router.post('/announcements', express.json(), async (req, res) => {
 });
 
 // Delete Announcement
-router.delete('/announcements/:id', express.json(), async (req, res) => {
+router.delete('/announcements/:id', async (req, res) => {
     try {
         await db.query('DELETE FROM announcements WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -495,7 +495,7 @@ router.get('/seasonal-discounts', async (req, res) => {
 });
 
 // Create/Edit Seasonal Discount
-router.post('/seasonal-discounts', express.json(), async (req, res) => {
+router.post('/seasonal-discounts', async (req, res) => {
     try {
         const { id, name, discount_type, discount_value, start_date, end_date, applies_to, is_active } = req.body;
 
@@ -524,7 +524,7 @@ router.post('/seasonal-discounts', express.json(), async (req, res) => {
 });
 
 // Delete Seasonal Discount
-router.delete('/seasonal-discounts/:id', express.json(), async (req, res) => {
+router.delete('/seasonal-discounts/:id', async (req, res) => {
     try {
         await db.query('DELETE FROM seasonal_discounts WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -556,7 +556,7 @@ router.get('/settings', async (req, res) => {
 });
 
 // Update Setting
-router.post('/settings/:key', express.json(), async (req, res) => {
+router.post('/settings/:key', async (req, res) => {
     try {
         const { value } = req.body;
         await db.query(`
