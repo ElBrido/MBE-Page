@@ -1,0 +1,183 @@
+<div class="success-page">
+    <div class="container">
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <h1>Payment Successful!</h1>
+            <p class="success-message">Your order has been confirmed and your server is being provisioned.</p>
+            
+            <div class="order-details">
+                <h3>Order #<%= order.id %></h3>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Plan:</span>
+                        <span class="detail-value"><%= order.plan_name || 'Custom Plan' %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Location:</span>
+                        <span class="detail-value"><%= order.node_location %></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Amount Paid:</span>
+                        <span class="detail-value">$<%= parseFloat(order.price).toFixed(2) %></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="next-steps">
+                <h3>What's Next?</h3>
+                <ul>
+                    <li><i class="fas fa-cog"></i> Your server is being provisioned (this may take a few minutes)</li>
+                    <li><i class="fas fa-envelope"></i> You'll receive an email with your server details</li>
+                    <li><i class="fas fa-tachometer-alt"></i> Access your server from the dashboard</li>
+                </ul>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="/dashboard" class="btn btn-primary btn-lg">
+                    <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                </a>
+                <a href="/plans" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-plus"></i> Order Another Server
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.success-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #8B0000, #DC143C);
+    display: flex;
+    align-items: center;
+    padding: 3rem 0;
+}
+
+.success-card {
+    background: white;
+    padding: 4rem 3rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.success-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    animation: scaleIn 0.5s ease;
+}
+
+.success-icon i {
+    font-size: 3rem;
+    color: white;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+.success-card h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+}
+
+.success-message {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 3rem;
+}
+
+.order-details {
+    background: #f9fafb;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.order-details h3 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.details-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #666;
+}
+
+.detail-value {
+    color: #1a1a1a;
+}
+
+.next-steps {
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.next-steps h3 {
+    margin-bottom: 1rem;
+}
+
+.next-steps ul {
+    list-style: none;
+    padding: 0;
+}
+
+.next-steps li {
+    display: flex;
+    align-items: start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: #666;
+}
+
+.next-steps i {
+    color: #8B0000;
+    margin-top: 0.25rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+</style>

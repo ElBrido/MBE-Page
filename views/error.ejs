@@ -1,0 +1,108 @@
+<div class="error-page">
+    <div class="container">
+        <div class="error-content">
+            <h1>Oops!</h1>
+            <h2>Something went wrong</h2>
+            <p>We're sorry, but something unexpected happened. Please try again later.</p>
+            
+            <% if (typeof error !== 'undefined' && error.message && process.env.NODE_ENV === 'development') { %>
+                <div class="error-details">
+                    <h3>Error Details (Development Mode)</h3>
+                    <pre><%= error.stack %></pre>
+                </div>
+            <% } %>
+            
+            <div class="error-actions">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Go Home
+                </a>
+                <a href="/dashboard" class="btn btn-outline-white">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #8B0000, #DC143C);
+    color: white;
+    padding: 2rem;
+}
+
+.error-content {
+    text-align: center;
+    max-width: 800px;
+}
+
+.error-content h1 {
+    font-size: 6rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    line-height: 1;
+}
+
+.error-content h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.error-content p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.error-details {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.error-details h3 {
+    margin-bottom: 1rem;
+}
+
+.error-details pre {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.error-content .btn-primary {
+    background: white;
+    color: #8B0000;
+    border: none;
+}
+
+.error-content .btn-primary:hover {
+    background: #f3f4f6;
+}
+
+@media (max-width: 768px) {
+    .error-content h1 {
+        font-size: 4rem;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+    }
+}
+</style>

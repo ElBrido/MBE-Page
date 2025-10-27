@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title + ' - ' : '' %>MadeByError Hosting</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <% if (typeof extraCSS !== 'undefined') { %>
+        <%= extraCSS %>
+    <% } %>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                <a href="/" class="brand-logo">
+                    <span class="brand-name">MBE</span>
+                    <span class="brand-subtitle">Hosting</span>
+                </a>
+            </div>
+            
+            <div class="navbar-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/plans" class="nav-link">Plans</a>
+                <a href="/about" class="nav-link">About</a>
+                <a href="/contact" class="nav-link">Contact</a>
+                
+                <% if (isAuthenticated) { %>
+                    <a href="/dashboard" class="nav-link">Dashboard</a>
+                    <a href="/auth/logout" class="btn btn-outline">Logout</a>
+                <% } else { %>
+                    <a href="/auth/login" class="btn btn-outline">Login</a>
+                    <a href="/auth/register" class="btn btn-primary">Get Started</a>
+                <% } %>
+            </div>
+            
+            <button class="navbar-toggle" id="navbarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="/" class="mobile-link">Home</a>
+        <a href="/plans" class="mobile-link">Plans</a>
+        <a href="/about" class="mobile-link">About</a>
+        <a href="/contact" class="mobile-link">Contact</a>
+        
+        <% if (isAuthenticated) { %>
+            <a href="/dashboard" class="mobile-link">Dashboard</a>
+            <a href="/auth/logout" class="mobile-link">Logout</a>
+        <% } else { %>
+            <a href="/auth/login" class="mobile-link">Login</a>
+            <a href="/auth/register" class="mobile-link">Get Started</a>
+        <% } %>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3 class="footer-title">MadeByError</h3>
+                    <p class="footer-text">Professional hosting solutions powered by innovation and reliability.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4 class="footer-heading">Products</h4>
+                    <ul class="footer-links">
+                        <li><a href="/plans">Hosting Plans</a></li>
+                        <li><a href="/plans/custom">Custom Plans</a></li>
+                        <li><a href="/about">About Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4 class="footer-heading">Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Status</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4 class="footer-heading">Contact</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-envelope"></i> <%= process.env.SUPPORT_EMAIL || 'support@madebyerror.studio' %></li>
+                        <li><i class="fas fa-briefcase"></i> <%= process.env.BUSINESS_EMAIL || 'business@madebyerror.studio' %></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; <%= new Date().getFullYear() %> MadeByError. All rights reserved.</p>
+                <div class="footer-locations">
+                    <span class="location-badge"><i class="fas fa-map-marker-alt"></i> Mexico</span>
+                    <span class="location-badge"><i class="fas fa-map-marker-alt"></i> Ohio, USA</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/js/main.js"></script>
+    
+    <% if (typeof extraJS !== 'undefined') { %>
+        <%= extraJS %>
+    <% } %>
+</body>
+</html>
