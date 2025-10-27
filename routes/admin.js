@@ -151,7 +151,7 @@ router.post('/users/:id/role', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Update role error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to update user role' });
     }
 });
 
@@ -165,7 +165,7 @@ router.post('/users/:id/toggle-active', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Toggle active error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to toggle user status' });
     }
 });
 
@@ -213,7 +213,7 @@ router.post('/plans', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Plan save error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to save plan' });
     }
 });
 
@@ -224,7 +224,7 @@ router.delete('/plans/:id', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Plan delete error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to delete plan' });
     }
 });
 
@@ -260,7 +260,7 @@ router.post('/servers/:id/status', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Update status error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to update server status' });
     }
 });
 
@@ -271,7 +271,7 @@ router.delete('/servers/:id', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Server delete error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to delete server' });
     }
 });
 
@@ -319,7 +319,7 @@ router.post('/orders/:id/status', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Update order status error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to update order status' });
     }
 });
 
@@ -368,7 +368,7 @@ router.post('/coupons', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Coupon save error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to save coupon' });
     }
 });
 
@@ -379,7 +379,7 @@ router.delete('/coupons/:id', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Coupon delete error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to delete coupon' });
     }
 });
 
@@ -425,7 +425,7 @@ router.post('/announcements', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Announcement save error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to save announcement' });
     }
 });
 
@@ -436,7 +436,7 @@ router.delete('/announcements/:id', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Announcement delete error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to delete announcement' });
     }
 });
 
@@ -483,7 +483,7 @@ router.post('/seasonal-discounts', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Seasonal discount save error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to save seasonal discount' });
     }
 });
 
@@ -494,7 +494,7 @@ router.delete('/seasonal-discounts/:id', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Seasonal discount delete error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to delete seasonal discount' });
     }
 });
 
@@ -531,7 +531,7 @@ router.post('/settings/:key', express.json(), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('Setting update error:', err);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false, error: 'Failed to update setting' });
     }
 });
 

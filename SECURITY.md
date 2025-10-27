@@ -44,7 +44,7 @@ This document outlines the security measures implemented in the MBE Hosting Plat
 
 ### 7. CORS & Cross-Site Protection
 - **CORS Configuration**: Restricted to specified origins
-- **CSRF Protection**: Session-based CSRF protection
+- **CSRF Protection**: ⚠️ **Important**: For production deployments, implement CSRF protection using packages like `csurf` or `csrf-csrf`. Current session-based setup provides basic protection but lacks token validation for state-changing operations.
 - **Same-Site Cookies**: Cookies configured with appropriate Same-Site attributes
 
 ### 8. Input Validation & Sanitization
@@ -132,13 +132,15 @@ X-XSS-Protection: 1; mode=block
 ## ⚠️ Known Limitations
 
 ### Current Limitations:
-1. **Two-Factor Authentication**: Not yet implemented (planned for future release)
-2. **Email Verification**: Registration doesn't require email verification
-3. **Password Reset**: Password reset functionality not implemented
-4. **Audit Logging**: No comprehensive audit trail of sensitive operations
-5. **IP Whitelisting**: No IP-based access restrictions
+1. **CSRF Token Validation**: Admin panel POST requests should implement CSRF tokens for production (recommended: use `csurf` middleware)
+2. **Two-Factor Authentication**: Not yet implemented (planned for future release)
+3. **Email Verification**: Registration doesn't require email verification
+4. **Password Reset**: Password reset functionality not implemented
+5. **Audit Logging**: No comprehensive audit trail of sensitive operations
+6. **IP Whitelisting**: No IP-based access restrictions
 
 ### Recommended Additions:
+- **Implement CSRF protection** using csurf middleware for all state-changing operations
 - Implement 2FA using authenticator apps
 - Add email verification during registration
 - Implement secure password reset flow
