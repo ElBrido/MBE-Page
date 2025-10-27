@@ -99,6 +99,15 @@
                     </label>
                 </div>
             </div>
+
+            <div class="form-group">
+                <label class="form-label">Coupon Code (Optional)</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="couponInput" placeholder="Enter coupon code" style="flex: 1; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; text-transform: uppercase;">
+                    <button type="button" id="applyCouponBtn" class="btn btn-secondary">Apply</button>
+                </div>
+                <div id="couponFeedback" style="margin-top: 0.5rem; font-size: 0.9rem;"></div>
+            </div>
             
             <div class="order-summary">
                 <h3>Order Summary</h3>
@@ -113,6 +122,10 @@
                 <div class="summary-item">
                     <span>Location:</span>
                     <span id="summaryLocation">Mexico City</span>
+                </div>
+                <div id="couponDiscountRow" class="summary-item discount" style="display: none; color: #10b981;">
+                    <span><i class="fas fa-tag"></i> Discount:</span>
+                    <span id="summaryDiscount">-</span>
                 </div>
                 <div class="summary-item total">
                     <span>Monthly Total:</span>
@@ -373,13 +386,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const orderButtons = document.querySelectorAll('.order-plan');
     const locationInputs = document.querySelectorAll('input[name="location"]');
     const proceedBtn = document.getElementById('proceedToCheckout');
+    const applyCouponBtn = document.getElementById('applyCouponBtn');
+    const couponInput = document.getElementById('couponInput');
     
     let selectedPlan = null;
+    let appliedCoupon = null;
+    let discountAmount = 0;
     
     orderButtons.forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             selectedPlan = JSON.parse(this.dataset.plan);
+            appliedCoupon = null;
+            discountAmount = 0;
+            couponInput.value = '';
+            document.getElementById('couponFeedback').textContent = '';
+            document.getElementById('couponDiscountRow').style.display = 'none';
             updateOrderSummary();
             modal.style.display = 'block';
         });
@@ -398,17 +420,74 @@ document.addEventListener('DOMContentLoaded', function() {
     locationInputs.forEach(input => {
         input.addEventListener('change', updateOrderSummary);
     });
+
+    // Handle coupon application
+    applyCouponBtn.addEventListener('click', async function() {
+        const code = couponInput.value.trim().toUpperCase();
+        if (!code || !selectedPlan) return;
+
+        const feedback = document.getElementById('couponFeedback');
+        feedback.textContent = 'Validating...';
+        feedback.style.color = '#666';
+
+        try {
+            const response = await fetch('/orders/validate-coupon', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    code: code,
+                    orderAmount: selectedPlan.price_monthly
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.valid) {
+                appliedCoupon = data.coupon.code;
+                discountAmount = parseFloat(data.discountAmount);
+                feedback.textContent = `✓ Coupon applied: ${data.coupon.description || 'Discount applied'}`;
+                feedback.style.color = '#10b981';
+                document.getElementById('couponDiscountRow').style.display = 'flex';
+                updateOrderSummary();
+            } else {
+                feedback.textContent = '✗ ' + data.message;
+                feedback.style.color = '#ef4444';
+                appliedCoupon = null;
+                discountAmount = 0;
+                document.getElementById('couponDiscountRow').style.display = 'none';
+                updateOrderSummary();
+            }
+        } catch (err) {
+            console.error(err);
+            feedback.textContent = '✗ Error validating coupon';
+            feedback.style.color = '#ef4444';
+        }
+    });
+
+    // Allow Enter key to apply coupon
+    couponInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            applyCouponBtn.click();
+        }
+    });
     
     function updateOrderSummary() {
         if (!selectedPlan) return;
         
         const selectedLocation = document.querySelector('input[name="location"]:checked').value;
+        const originalPrice = parseFloat(selectedPlan.price_monthly);
+        const finalPrice = originalPrice - discountAmount;
         
         document.getElementById('summaryPlan').textContent = selectedPlan.name;
         document.getElementById('summaryResources').textContent = 
             `${selectedPlan.cpu} CPU, ${(selectedPlan.ram/1024).toFixed(0)}GB RAM, ${selectedPlan.disk}GB SSD`;
         document.getElementById('summaryLocation').textContent = selectedLocation;
-        document.getElementById('summaryPrice').textContent = `$${selectedPlan.price_monthly.toFixed(2)}`;
+        
+        if (discountAmount > 0) {
+            document.getElementById('summaryDiscount').textContent = `-$${discountAmount.toFixed(2)}`;
+        }
+        
+        document.getElementById('summaryPrice').textContent = `$${finalPrice.toFixed(2)}`;
     }
     
     proceedBtn.addEventListener('click', async function() {
@@ -430,7 +509,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     disk: selectedPlan.disk,
                     databases: selectedPlan.databases,
                     backups: selectedPlan.backups,
-                    price: selectedPlan.price_monthly
+                    price: selectedPlan.price_monthly,
+                    couponCode: appliedCoupon
                 })
             });
             
@@ -439,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 window.location.href = `/payment/checkout/${data.orderId}`;
             } else {
-                alert('Error creating order. Please try again.');
+                alert(data.error || 'Error creating order. Please try again.');
             }
         } catch (err) {
             console.error(err);
