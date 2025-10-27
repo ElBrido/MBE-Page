@@ -68,6 +68,7 @@ async function createTables() {
                 first_name TEXT,
                 last_name TEXT,
                 phone TEXT,
+                role VARCHAR(20) DEFAULT 'user',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 is_active BOOLEAN DEFAULT true,
@@ -105,7 +106,10 @@ async function createTables() {
                 disk INTEGER,
                 databases INTEGER,
                 backups INTEGER,
+                original_price DECIMAL(10, 2) NOT NULL,
+                discount_amount DECIMAL(10, 2) DEFAULT 0,
                 price DECIMAL(10, 2) NOT NULL,
+                coupon_id INTEGER REFERENCES coupons(id),
                 status VARCHAR(50) DEFAULT 'pending',
                 stripe_payment_intent_id TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -161,6 +165,80 @@ async function createTables() {
 
         await client.query('CREATE INDEX IF NOT EXISTS IDX_sessions_expire ON sessions(expire)');
 
+        // Coupons table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS coupons (
+                id SERIAL PRIMARY KEY,
+                code VARCHAR(50) UNIQUE NOT NULL,
+                type VARCHAR(20) NOT NULL,
+                value DECIMAL(10, 2) NOT NULL,
+                description TEXT,
+                start_date TIMESTAMP,
+                end_date TIMESTAMP,
+                usage_limit INTEGER,
+                usage_count INTEGER DEFAULT 0,
+                min_purchase DECIMAL(10, 2) DEFAULT 0,
+                is_active BOOLEAN DEFAULT true,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Announcements table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS announcements (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                content TEXT NOT NULL,
+                type VARCHAR(20) DEFAULT 'info',
+                start_date TIMESTAMP,
+                end_date TIMESTAMP,
+                is_active BOOLEAN DEFAULT true,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Site settings table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS site_settings (
+                id SERIAL PRIMARY KEY,
+                setting_key VARCHAR(100) UNIQUE NOT NULL,
+                setting_value TEXT,
+                setting_type VARCHAR(20) DEFAULT 'text',
+                description TEXT,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Seasonal discounts table
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS seasonal_discounts (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100) NOT NULL,
+                discount_type VARCHAR(20) NOT NULL,
+                discount_value DECIMAL(10, 2) NOT NULL,
+                start_date TIMESTAMP NOT NULL,
+                end_date TIMESTAMP NOT NULL,
+                applies_to VARCHAR(20) DEFAULT 'all',
+                is_active BOOLEAN DEFAULT true,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Add coupon usage tracking
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS coupon_usage (
+                id SERIAL PRIMARY KEY,
+                coupon_id INTEGER REFERENCES coupons(id) ON DELETE CASCADE,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
+                discount_amount DECIMAL(10, 2) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
         await client.query('COMMIT');
     } catch (err) {
         await client.query('ROLLBACK');
@@ -194,11 +272,41 @@ async function insertDefaultPlans() {
     }
 }
 
+// Insert default site settings
+async function insertDefaultSettings() {
+    const client = await pool.connect();
+    try {
+        const checkSettings = await client.query('SELECT COUNT(*) FROM site_settings');
+        if (parseInt(checkSettings.rows[0].count) === 0) {
+            await client.query(`
+                INSERT INTO site_settings (setting_key, setting_value, setting_type, description)
+                VALUES 
+                    ('site_theme', 'normal', 'select', 'Current site theme'),
+                    ('enable_auto_theme', 'true', 'boolean', 'Enable automatic theme switching based on dates'),
+                    ('halloween_start', '10-01', 'date', 'Halloween theme start date (MM-DD)'),
+                    ('halloween_end', '11-01', 'date', 'Halloween theme end date (MM-DD)'),
+                    ('christmas_start', '12-01', 'date', 'Christmas theme start date (MM-DD)'),
+                    ('christmas_end', '12-31', 'date', 'Christmas theme end date (MM-DD)'),
+                    ('site_name', 'MadeByError Hosting', 'text', 'Site name'),
+                    ('support_email', 'support@madebyerror.studio', 'email', 'Support email address'),
+                    ('enable_registration', 'true', 'boolean', 'Allow new user registrations'),
+                    ('maintenance_mode', 'false', 'boolean', 'Enable maintenance mode')
+            `);
+            console.log('✅ Default settings inserted');
+        }
+    } catch (err) {
+        console.error('Error inserting default settings:', err);
+    } finally {
+        client.release();
+    }
+}
+
 module.exports = {
     pool,
     query: (text, params) => pool.query(text, params),
     initialize,
     insertDefaultPlans,
+    insertDefaultSettings,
     encrypt,
     decrypt
 };

@@ -54,9 +54,9 @@ router.post('/register', [
 
         // Insert user
         const result = await db.query(
-            `INSERT INTO users (email, password_hash, first_name, last_name, phone) 
-             VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-            [email, passwordHash, firstName, lastName, encryptedPhone]
+            `INSERT INTO users (email, password_hash, first_name, last_name, phone, role) 
+             VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, role`,
+            [email, passwordHash, firstName, lastName, encryptedPhone, 'user']
         );
 
         // Log user in
@@ -64,7 +64,8 @@ router.post('/register', [
             id: result.rows[0].id,
             email: email,
             firstName: firstName,
-            lastName: lastName
+            lastName: lastName,
+            role: result.rows[0].role
         };
 
         res.redirect('/dashboard');
@@ -134,7 +135,8 @@ router.post('/login', [
             id: user.id,
             email: user.email,
             firstName: user.first_name,
-            lastName: user.last_name
+            lastName: user.last_name,
+            role: user.role || 'user'
         };
 
         // Redirect to original URL or dashboard

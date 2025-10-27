@@ -1,0 +1,168 @@
+<div class="admin-container">
+    <div class="admin-header">
+        <h1><i class="fas fa-cog"></i> Site Settings</h1>
+        <p>Configure site-wide settings and themes.</p>
+    </div>
+
+    <!-- Current Theme Display -->
+    <div class="admin-section" style="margin-bottom: 2rem;">
+        <h2>Current Active Theme</h2>
+        <div class="theme-display">
+            <div class="theme-card active-theme">
+                <% if (currentTheme === 'halloween') { %>
+                    <div style="background: linear-gradient(135deg, #ff6b35 0%, #f7931a 100%); padding: 2rem; border-radius: 12px; color: white; text-align: center;">
+                        <i class="fas fa-ghost" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h3>Halloween Theme</h3>
+                        <p>🎃 Spooky season is here!</p>
+                    </div>
+                <% } else if (currentTheme === 'christmas') { %>
+                    <div style="background: linear-gradient(135deg, #c41e3a 0%, #165b33 100%); padding: 2rem; border-radius: 12px; color: white; text-align: center;">
+                        <i class="fas fa-snowflake" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h3>Christmas Theme</h3>
+                        <p>🎄 Happy Holidays!</p>
+                    </div>
+                <% } else { %>
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 12px; color: white; text-align: center;">
+                        <i class="fas fa-palette" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h3>Normal Theme</h3>
+                        <p>Default professional theme</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Form -->
+    <div class="admin-section">
+        <h2>Theme Settings</h2>
+        <div class="admin-form">
+            <% 
+            const themeSettings = settings.filter(s => s.setting_key.includes('theme') || s.setting_key.includes('halloween') || s.setting_key.includes('christmas'));
+            %>
+            
+            <% themeSettings.forEach(setting => { %>
+                <div class="form-group">
+                    <label>
+                        <%= setting.description || setting.setting_key %>
+                        <% if (setting.setting_type === 'boolean') { %>
+                            <select class="form-control setting-input" data-key="<%= setting.setting_key %>" style="display: inline-block; width: auto; margin-left: 1rem;">
+                                <option value="true" <%= setting.setting_value === 'true' ? 'selected' : '' %>>Enabled</option>
+                                <option value="false" <%= setting.setting_value === 'false' ? 'selected' : '' %>>Disabled</option>
+                            </select>
+                        <% } else if (setting.setting_type === 'select') { %>
+                            <select class="form-control setting-input" data-key="<%= setting.setting_key %>" style="display: inline-block; width: auto; margin-left: 1rem;">
+                                <option value="normal" <%= setting.setting_value === 'normal' ? 'selected' : '' %>>Normal</option>
+                                <option value="halloween" <%= setting.setting_value === 'halloween' ? 'selected' : '' %>>Halloween</option>
+                                <option value="christmas" <%= setting.setting_value === 'christmas' ? 'selected' : '' %>>Christmas</option>
+                            </select>
+                        <% } else { %>
+                            <input type="text" class="form-control setting-input" data-key="<%= setting.setting_key %>" value="<%= setting.setting_value %>" placeholder="MM-DD" style="display: inline-block; width: 150px; margin-left: 1rem;">
+                        <% } %>
+                    </label>
+                    <small style="display: block; color: #666; margin-top: 0.25rem;"><%= setting.description %></small>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+
+    <!-- General Settings -->
+    <div class="admin-section" style="margin-top: 2rem;">
+        <h2>General Settings</h2>
+        <div class="admin-form">
+            <% 
+            const generalSettings = settings.filter(s => !s.setting_key.includes('theme') && !s.setting_key.includes('halloween') && !s.setting_key.includes('christmas'));
+            %>
+            
+            <% generalSettings.forEach(setting => { %>
+                <div class="form-group">
+                    <label>
+                        <%= setting.description || setting.setting_key %>
+                    </label>
+                    <% if (setting.setting_type === 'boolean') { %>
+                        <select class="form-control setting-input" data-key="<%= setting.setting_key %>">
+                            <option value="true" <%= setting.setting_value === 'true' ? 'selected' : '' %>>Enabled</option>
+                            <option value="false" <%= setting.setting_value === 'false' ? 'selected' : '' %>>Disabled</option>
+                        </select>
+                    <% } else if (setting.setting_type === 'email') { %>
+                        <input type="email" class="form-control setting-input" data-key="<%= setting.setting_key %>" value="<%= setting.setting_value %>">
+                    <% } else { %>
+                        <input type="text" class="form-control setting-input" data-key="<%= setting.setting_key %>" value="<%= setting.setting_value %>">
+                    <% } %>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+
+    <!-- Theme Preview -->
+    <div class="admin-section" style="margin-top: 2rem;">
+        <h2>Theme Previews</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+            <!-- Normal Theme -->
+            <div class="theme-preview">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 12px; color: white; text-align: center;">
+                    <i class="fas fa-palette" style="font-size: 2.5rem; margin-bottom: 0.5rem;"></i>
+                    <h4>Normal Theme</h4>
+                    <p style="font-size: 0.9rem; margin: 0.5rem 0;">Professional crimson & dark design</p>
+                </div>
+            </div>
+
+            <!-- Halloween Theme -->
+            <div class="theme-preview">
+                <div style="background: linear-gradient(135deg, #ff6b35 0%, #f7931a 100%); padding: 1.5rem; border-radius: 12px; color: white; text-align: center;">
+                    <i class="fas fa-ghost" style="font-size: 2.5rem; margin-bottom: 0.5rem;"></i>
+                    <h4>Halloween Theme</h4>
+                    <p style="font-size: 0.9rem; margin: 0.5rem 0;">Spooky orange & black colors</p>
+                    <small>🎃 Oct 1 - Nov 1</small>
+                </div>
+            </div>
+
+            <!-- Christmas Theme -->
+            <div class="theme-preview">
+                <div style="background: linear-gradient(135deg, #c41e3a 0%, #165b33 100%); padding: 1.5rem; border-radius: 12px; color: white; text-align: center;">
+                    <i class="fas fa-snowflake" style="font-size: 2.5rem; margin-bottom: 0.5rem;"></i>
+                    <h4>Christmas Theme</h4>
+                    <p style="font-size: 0.9rem; margin: 0.5rem 0;">Festive red & green colors</p>
+                    <small>🎄 Dec 1 - Dec 31</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="/css/admin.css">
+<script>
+// Auto-save settings on change
+document.querySelectorAll('.setting-input').forEach(input => {
+    input.addEventListener('change', async function() {
+        const key = this.dataset.key;
+        const value = this.value;
+        
+        try {
+            const response = await fetch(`/admin/settings/${key}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ value })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                // Show brief success indicator
+                this.style.borderColor = '#10b981';
+                setTimeout(() => {
+                    this.style.borderColor = '';
+                    // Reload if theme setting changed
+                    if (key.includes('theme')) {
+                        location.reload();
+                    }
+                }, 1000);
+            } else {
+                alert('Error updating setting: ' + data.error);
+                this.style.borderColor = '#ef4444';
+            }
+        } catch (err) {
+            alert('Error updating setting: ' + err.message);
+            this.style.borderColor = '#ef4444';
+        }
+    });
+});
+</script>
