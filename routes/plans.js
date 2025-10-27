@@ -27,7 +27,7 @@ router.get('/custom', (req, res) => {
 });
 
 // Calculate custom plan price
-router.post('/custom/calculate', express.json(), (req, res) => {
+router.post('/custom/calculate',  (req, res) => {
     try {
         const { cpu, ram, disk, databases, backups } = req.body;
 

@@ -5,7 +5,7 @@ const db = require('../config/database');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // Create payment intent
-router.post('/create-payment-intent', isAuthenticated, express.json(), async (req, res) => {
+router.post('/create-payment-intent', isAuthenticated, async (req, res) => {
     try {
         const { orderId, amount } = req.body;
 
