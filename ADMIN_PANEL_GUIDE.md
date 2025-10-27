@@ -55,8 +55,10 @@ The MBE Hosting platform now includes a comprehensive admin panel with extensive
 ### 7. **Theme Management**
 Three available themes:
 - **Normal**: Default professional crimson theme
-- **Halloween**: Orange and black spooky theme (Oct 1 - Nov 1)
-- **Christmas**: Red and green festive theme (Dec 1 - Dec 31)
+- **Halloween**: Orange and black spooky theme (Oct 1 - Nov 1 by default, configurable)
+- **Christmas**: Red and green festive theme (Dec 1 - Dec 31 by default, configurable)
+
+Note: Date ranges are configurable in admin settings. Halloween extends to Nov 1 to include the full Halloween season.
 
 Features:
 - Manual theme selection
@@ -239,9 +241,9 @@ Customers can apply coupons in two ways:
 2. Check session is valid (try logging out/in)
 3. Ensure middleware is properly configured
 
-## Future Enhancements
+## Potential Future Enhancements
 
-Possible additions:
+The following features could be considered for future development (not currently implemented):
 - Email notifications for coupons
 - Bulk coupon generation
 - More granular plan-specific discounts

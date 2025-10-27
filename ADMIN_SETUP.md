@@ -54,23 +54,38 @@ UPDATE users SET role = 'admin' WHERE email = 'youremail@example.com';
 
 #### Option B: Directly in Database
 ```sql
--- First create a user (password is 'admin123' hashed with bcrypt)
+-- First, hash your desired password using Node.js bcrypt
+-- Run this in Node.js console or create a small script:
+-- const bcrypt = require('bcryptjs');
+-- const hash = await bcrypt.hash('yourpassword', 10);
+-- console.log(hash);
+-- 
+-- Then use the generated hash in the INSERT statement below
+
 INSERT INTO users (email, password_hash, first_name, last_name, role)
 VALUES (
     'admin@madebyerror.studio',
-    '$2a$10$YourHashedPasswordHere',  -- Use bcrypt to hash your password
+    -- Replace with your actual bcrypt hash from the step above
+    -- Example hash (for password 'admin123'): '$2a$10$N9qo8uLOickgx2ZMRZoMye5RhXHWmhqwlE9g/zj7bqQrQwO.vjsSe'
+    'YOUR_BCRYPT_HASH_HERE',
     'Admin',
     'User',
     'admin'
 );
 ```
 
-To hash a password with bcrypt in Node.js:
+To generate a bcrypt hash for your password, create a file `hash-password.js`:
 ```javascript
 const bcrypt = require('bcryptjs');
-const hash = await bcrypt.hash('yourpassword', 10);
-console.log(hash);
+
+const password = 'your-secure-password'; // Change this
+bcrypt.hash(password, 10).then(hash => {
+    console.log('Your bcrypt hash:', hash);
+    console.log('\nUse this hash in your INSERT statement');
+});
 ```
+
+Run it with: `node hash-password.js`
 
 ### 5. Access Admin Panel
 1. Log in with your admin account
@@ -124,9 +139,12 @@ After setup, verify everything works:
 ### Database Connection Failed
 **Error**: `Failed to initialize database`
 **Solution**: 
-1. Verify PostgreSQL is running
+1. Verify PostgreSQL is running: `sudo systemctl status postgresql` (Linux) or check Services (Windows)
 2. Check database credentials in `.env`
-3. Ensure database exists: `createdb mbe_hosting`
+3. Ensure database exists:
+   - Using psql: `psql -U postgres -c "CREATE DATABASE mbe_hosting;"`
+   - Using pgAdmin: Create new database named 'mbe_hosting'
+   - Using command-line: `createdb mbe_hosting` (if PostgreSQL tools are in PATH)
 
 ### Admin Panel Shows 403 Forbidden
 **Error**: `Access denied. Admin privileges required.`
