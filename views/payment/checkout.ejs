@@ -61,10 +61,42 @@
                     <h4>Location</h4>
                     <p><i class="fas fa-map-marker-alt"></i> <%= order.node_location %></p>
                 </div>
-                
-                <div class="summary-total">
-                    <span>Total (Monthly)</span>
-                    <span class="total-amount">$<%= parseFloat(order.price).toFixed(2) %></span>
+
+                <!-- Coupon Code Section -->
+                <% if (!order.coupon_id) { %>
+                    <div class="summary-section coupon-section">
+                        <h4>Have a Coupon?</h4>
+                        <div class="coupon-input-group">
+                            <input type="text" id="coupon-code" placeholder="Enter coupon code" style="flex: 1; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; text-transform: uppercase;">
+                            <button type="button" id="apply-coupon-btn" class="btn btn-secondary" style="padding: 0.75rem 1.5rem;">Apply</button>
+                        </div>
+                        <div id="coupon-message" style="margin-top: 0.5rem; font-size: 0.9rem;"></div>
+                    </div>
+                <% } else { %>
+                    <div class="summary-section">
+                        <h4>Coupon Applied</h4>
+                        <div style="color: #10b981; font-weight: 600;">
+                            <i class="fas fa-tag"></i> Coupon code applied
+                        </div>
+                    </div>
+                <% } %>
+
+                <!-- Pricing Summary -->
+                <div class="summary-pricing">
+                    <% if (order.discount_amount && parseFloat(order.discount_amount) > 0) { %>
+                        <div class="pricing-row">
+                            <span>Subtotal</span>
+                            <span>$<%= parseFloat(order.original_price || order.price).toFixed(2) %></span>
+                        </div>
+                        <div class="pricing-row discount-row">
+                            <span><i class="fas fa-tag"></i> Discount</span>
+                            <span>-$<%= parseFloat(order.discount_amount).toFixed(2) %></span>
+                        </div>
+                    <% } %>
+                    <div class="summary-total">
+                        <span>Total (Monthly)</span>
+                        <span class="total-amount" id="total-amount">$<%= parseFloat(order.price).toFixed(2) %></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -207,6 +239,46 @@
 .total-amount {
     color: #8B0000;
     font-size: 2rem;
+}
+
+.coupon-section {
+    background: #f9fafb;
+    padding: 1rem !important;
+    border-radius: 8px;
+}
+
+.coupon-input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+#coupon-message {
+    min-height: 20px;
+}
+
+#coupon-message.success {
+    color: #10b981;
+}
+
+#coupon-message.error {
+    color: #ef4444;
+}
+
+.summary-pricing {
+    padding-top: 1rem;
+}
+
+.pricing-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    color: #666;
+}
+
+.discount-row {
+    color: #10b981;
+    font-weight: 600;
 }
 
 @media (max-width: 968px) {

@@ -358,3 +358,18 @@ body {
 .p-2 { padding: 1rem; }
 .p-3 { padding: 1.5rem; }
 .p-4 { padding: 2rem; }
+
+/* Announcements */
+.announcements-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+}
+
+.announcements-container .alert {
+    margin-bottom: 1rem;
+}
+
+.announcements-container .alert:last-child {
+    margin-bottom: 0;
+}

@@ -1,0 +1,86 @@
+/* Halloween Theme */
+
+:root {
+    --primary: #ff6b35;
+    --primary-dark: #d45426;
+    --primary-light: #ff8c5a;
+    --secondary: #f7931a;
+    --accent: #000000;
+}
+
+body[data-theme="halloween"] {
+    background-color: #1a1a1a;
+}
+
+/* Navbar Halloween Theme */
+body[data-theme="halloween"] .navbar {
+    background: rgba(0, 0, 0, 0.95);
+    border-bottom: 2px solid var(--primary);
+}
+
+body[data-theme="halloween"] .brand-name {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Buttons */
+body[data-theme="halloween"] .btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+}
+
+body[data-theme="halloween"] .btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    transform: translateY(-2px);
+}
+
+/* Cards and sections */
+body[data-theme="halloween"] .plan-card,
+body[data-theme="halloween"] .stat-card,
+body[data-theme="halloween"] .admin-section {
+    background: #2a2a2a;
+    border: 1px solid var(--primary);
+}
+
+body[data-theme="halloween"] .plan-card:hover {
+    border-color: var(--secondary);
+    box-shadow: 0 8px 24px rgba(255, 107, 53, 0.2);
+}
+
+/* Spooky decorations */
+body[data-theme="halloween"] .hero:before {
+    content: '🎃';
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    font-size: 4rem;
+    opacity: 0.3;
+    animation: float 6s ease-in-out infinite;
+}
+
+body[data-theme="halloween"] .hero:after {
+    content: '👻';
+    position: absolute;
+    bottom: 20%;
+    right: 10%;
+    font-size: 4rem;
+    opacity: 0.3;
+    animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+/* Footer */
+body[data-theme="halloween"] .footer {
+    background: #0a0a0a;
+    border-top: 2px solid var(--primary);
+}
+
+/* Announcement styles */
+body[data-theme="halloween"] .announcements-container {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+}
